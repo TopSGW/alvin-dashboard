@@ -1,11 +1,12 @@
 module.exports = {
   apps: [{
     name: "admin-dashboard",
-    script: "npm",
-    args: "run preview -- --port 3000",
+    script: "serve",
     env: {
-      NODE_ENV: "production",
-      PORT: 3000
-    },
+      PM2_SERVE_PATH: './dist',
+      PM2_SERVE_PORT: 5000,
+      PM2_SERVE_SPA: 'true',
+      PM2_SERVE_HOMEPAGE: '/index.html'
+    }
   }]
-};
+}
