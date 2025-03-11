@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: "admin-dashboard",
+    name: "admin-dashboard2",
     script: "serve",
     env: {
       PM2_SERVE_PATH: './dist',
