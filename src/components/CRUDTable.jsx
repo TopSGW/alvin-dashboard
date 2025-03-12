@@ -19,6 +19,7 @@ const CRUDTable = () => {
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
+  const [totalEntries, setTotalEntries] = useState(0);
 
   useEffect(() => {
     fetchCaseDetails();
@@ -31,13 +32,16 @@ const CRUDTable = () => {
       
       if (Array.isArray(response)) {
         setData(response);
+        setTotalEntries(response.length);
       } else if (response && typeof response === 'object' && Array.isArray(response.data)) {
         setData(response.data);
+        setTotalEntries(response.total || response.data.length);
       } else if (response && typeof response === 'object') {
         const possibleArrays = ['items', 'results', 'case_details'];
         for (const key of possibleArrays) {
           if (Array.isArray(response[key])) {
             setData(response[key]);
+            setTotalEntries(response.total || response[key].length);
             return;
           }
         }
@@ -50,6 +54,7 @@ const CRUDTable = () => {
       setError('Failed to fetch case details: ' + (err.response?.data?.detail || err.message));
       console.error('Error fetching case details:', err);
       setData([]);
+      setTotalEntries(0);
     } finally {
       setLoading(false);
     }
@@ -69,7 +74,6 @@ const CRUDTable = () => {
   const handleSave = async (id) => {
     try {
       setLoading(true);
-      // Ensure editingData is a proper object before sending
       const dataToUpdate = {
         inquiry: editingData.inquiry,
         name: editingData.name,
@@ -147,7 +151,6 @@ const CRUDTable = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Implement search functionality here
     console.log('Searching for:', searchTerm);
   };
 
@@ -359,7 +362,7 @@ const CRUDTable = () => {
             </table>
             <div className="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
               <span className="text-xs xs:text-sm text-gray-900">
-                Showing {page * limit + 1} to {Math.min((page + 1) * limit, page * limit + filteredData.length)} of {filteredData.length} Entries
+                Showing {filteredData.length > 0 ? page * limit + 1 : 0} to {Math.min((page + 1) * limit, totalEntries)} of {totalEntries} Entries
               </span>
               <div className="inline-flex mt-2 xs:mt-0">
                 <button
@@ -371,7 +374,7 @@ const CRUDTable = () => {
                 </button>
                 <button
                   onClick={handleNextPage}
-                  disabled={filteredData.length < limit}
+                  disabled={(page + 1) * limit >= totalEntries}
                   className="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r"
                 >
                   Next
