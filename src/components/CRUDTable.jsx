@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getCaseDetails, createCaseDetail, updateCaseDetail, deleteCaseDetail } from '../services/api';
+import { getCaseDetails, createCaseDetail, updateCaseDetail, deleteCaseDetail, getCaseLength } from '../services/api';
 
 const CRUDTable = () => {
   const [data, setData] = useState([]);
@@ -29,10 +29,10 @@ const CRUDTable = () => {
     try {
       setLoading(true);
       const response = await getCaseDetails(page * limit, limit);
-      
+      const itemCounts = await getCaseLength();
       if (Array.isArray(response)) {
         setData(response);
-        setTotalEntries(response.length);
+        setTotalEntries(itemCounts.count);
       } else if (response && typeof response === 'object' && Array.isArray(response.data)) {
         setData(response.data);
         setTotalEntries(response.total || response.data.length);

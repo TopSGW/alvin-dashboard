@@ -35,6 +35,14 @@ export const login = async (email, password) => {
   }
 };
 
+export const getCaseLength = async () => {
+  try{
+    const response = await api.get('/case_details_all');
+    return response.data
+  } catch(error) {
+    console.error('get case length error', error)
+  } 
+}
 // export const register = async (email, password) => {
 //   try {
 //     const response = await api.post('/register', { email, password });
